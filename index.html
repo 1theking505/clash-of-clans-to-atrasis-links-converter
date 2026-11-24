@@ -138,7 +138,164 @@
       color: var(--warn);
       line-height: 1.4;
     }
-  </style>
+  
+    /* ARMY REMAP DIAGNOSTICS V1 */
+    .army-report {
+      margin-top: 12px;
+      text-align: left;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .army-report h4 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+
+    .army-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      background: rgba(127,127,127,.10);
+      overflow-wrap: anywhere;
+    }
+
+    .army-warnings, .army-success {
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      background: rgba(127,127,127,.10);
+    }
+
+    .army-warnings { color: var(--warn); }
+    .army-success { color: var(--success); }
+
+    .army-warnings ul {
+      padding-left: 20px;
+      margin: 5px 0 0;
+    }
+
+    .army-table-wrap {
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    .army-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .76rem;
+      text-align: left;
+    }
+
+    .army-table th, .army-table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(127,127,127,.22);
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    .army-table th {
+      font-weight: 700;
+      background: rgba(127,127,127,.12);
+    }
+
+    .army-status-good {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .army-status-warn {
+      color: var(--warn);
+      font-weight: 600;
+    }
+
+    .army-report details {
+      margin-top: 9px;
+      padding: 8px;
+      background: rgba(127,127,127,.09);
+      border-radius: 7px;
+    }
+
+    .army-report summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .army-report details code {
+      display: block;
+      margin-top: 8px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      font-size: .72rem;
+    }
+
+    @media (max-width: 520px) {
+      .army-meta { grid-template-columns: 1fr; }
+    }
+    
+
+/* FULL-WIDTH LAYOUT OVERRIDE V1 */
+html, body {
+    width: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh !important;
+    padding: clamp(10px, 1.3vw, 24px) !important;
+    overflow-x: hidden;
+}
+
+/* Remove the common fixed-width page wrappers. */
+body > div:first-of-type,
+body > main:first-of-type,
+body > .container,
+body > .wrapper,
+body > #app,
+body > #root,
+#app,
+#root,
+.container,
+.wrapper,
+.app,
+.app-container,
+.main-container,
+.page-container,
+.content-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Let the controls use the available width. */
+textarea,
+input,
+select,
+.output,
+.input,
+.input-group,
+.output-group {
+    max-width: 100%;
+}
+
+/* Avoid oversized controls overflowing on smaller screens. */
+@media (max-width: 700px) {
+    body {
+        padding: 10px !important;
+    }
+}
+/* END FULL-WIDTH LAYOUT OVERRIDE V1 */
+
+</style>
 </head>
 <body>
   <div class="container">
@@ -174,13 +331,9 @@
   <script>
     let targetServer = 'ultimate';
 
-    // These IDs are taken from a genuine working Atrasis Ultimate army link.
-    // If a converted CoC army uses IDs outside this set, Atrasis will usually
-    // reject it as "invalid army" because the troop/spell doesn't exist in
-    // its game version.
-    const KNOWN_ATRASIS_IDS = new Set([
-      1, 2, 5, 8, 9, 10, 57, 63, 65, 70, 76, 98, 99, 109, 123, 143, 204
-    ]);
+    // ARMY REMAP DATABASES V1
+    const ARMY_DATABASES = {"coc":{"version":"19.32.2","troops":{"0":{"name":"Barbarian","tid":"TID_BARBARIAN"},"1":{"name":"Archer","tid":"TID_ARCHER"},"3":{"name":"Giant","tid":"TID_GIANT"},"2":{"name":"Goblin","tid":"TID_GOBLIN"},"4":{"name":"Wall Breaker","tid":"TID_WALL_BREAKER"},"5":{"name":"Balloon","tid":"TID_GOBLIN_BALLOON"},"6":{"name":"Wizard","tid":"TID_WIZARD"},"7":{"name":"Healer","tid":"TID_HEALER"},"8":{"name":"Dragon","tid":"TID_DRAGON"},"9":{"name":"PEKKA","tid":"TID_PEKKA"},"23":{"name":"Baby Dragon","tid":"TID_BABY_DRAGON"},"24":{"name":"Miner","tid":"TID_MINER"},"59":{"name":"Electro Dragon","tid":"TID_LIGHTNINGDRAGON"},"53":{"name":"Yeti","tid":"TID_CHARACTER_YETI"},"54":{"name":"Yetimite","tid":"TID_CHARACTER_YETIMITE"},"65":{"name":"Dragon Rider","tid":"TID_CHARACTER_MECHA_DRAGON"},"95":{"name":"Electro Titan","tid":"TID_CHARACTER_ELECTRO_TITAN"},"110":{"name":"Root Rider","tid":"TID_CHARACTER_TREANT"},"132":{"name":"Thrower","tid":"TID_CHARACTER_THROWER"},"177":{"name":"Meteor Golem","tid":"TID_METEOR_GOLEM"},"178":{"name":"Meteormite","tid":"TID_METEOR_GOLEM_SMALL"},"179":{"name":"Defensive Meteor Golem","tid":"TID_METEOR_GOLEM"},"180":{"name":"Defensive Meteormite","tid":"TID_METEOR_GOLEM_SMALL"},"10":{"name":"Minion","tid":"TID_GARGOYLE"},"11":{"name":"Hog Rider","tid":"TID_BOARRIDER"},"12":{"name":"Valkyrie","tid":"TID_WARRIORGIRL"},"13":{"name":"Golem","tid":"TID_GOLEM"},"14":{"name":"Golemite","tid":"TID_GOLEM_SEC"},"15":{"name":"Witch","tid":"TID_WARLOCK"},"16":{"name":"Skeleton","tid":"TID_SKELETON"},"17":{"name":"Lava Hound","tid":"TID_AD_SEEKER"},"18":{"name":"Lava Pup","tid":"TID_AD_SEEKER_FRAG"},"77":{"name":"Defensive Lava Hound","tid":"TID_AD_SEEKER"},"22":{"name":"Bowler","tid":"TID_BOWLER"},"58":{"name":"Ice Golem","tid":"TID_ICEGOLEM"},"69":{"name":"Defensive Ice Golem","tid":"TID_ICEGOLEM"},"82":{"name":"Headhunter","tid":"TID_CHARACTER_HEADHUNTER"},"97":{"name":"Apprentice Warden","tid":"TID_CHARACTER_APPRENTICE_WARDEN"},"123":{"name":"Druid","tid":"TID_CHARACTER_SHAPESHIFTER_DRUID"},"124":{"name":"Bear","tid":"TID_CHARACTER_SHAPESHIFTER_DRUID_BEAR"},"150":{"name":"Furnace","tid":"TID_CHARACTER_FURNACE"},"149":{"name":"Firemite Spawn","tid":"TID_CHARACTER_FIREMITE"},"151":{"name":"Furnace_DEF","tid":"TID_CHARACTER_FURNACE"},"152":{"name":"Firemite Spawn_DEF","tid":"TID_CHARACTER_FIREMITE"},"26":{"name":"Super Barbarian","tid":"TID_CHARACTER_ELITE_BARBARIAN"},"27":{"name":"Super Archer","tid":"TID_CHARACTER_MAGIC_ARCHER"},"29":{"name":"Super Giant","tid":"TID_CHARACTER_ELITE_GIANT"},"55":{"name":"Sneaky Goblin","tid":"TID_CHARACTER_ELITE_GOBLIN"},"28":{"name":"Super Wall Breaker","tid":"TID_CHARACTER_ELITE_WALLBREAKER"},"57":{"name":"Rocket Balloon","tid":"TID_CHARACTER_HASTY_BALLOON"},"83":{"name":"Super Wizard","tid":"TID_SUPER_WIZARD"},"81":{"name":"Super Dragon","tid":"TID_SUPER_DRAGON"},"63":{"name":"Inferno Dragon","tid":"TID_CHARACTER_INFERNO_DRAGON"},"56":{"name":"Super Miner","tid":"TID_SUPER_MINER"},"147":{"name":"Super Yeti","tid":"TID_CHARACTER_SUPER_YETI"},"148":{"name":"Electromite","tid":"TID_CHARACTER_ELECTROMITE"},"84":{"name":"Super Minion","tid":"TID_SUPER_MINION"},"86":{"name":"Defensive Super Minion","tid":"TID_SUPER_MINION"},"98":{"name":"Super Hog Rider","tid":"TID_CHARACTER_SUPER_HOG_RIDER"},"99":{"name":"Super Hog","tid":"TID_CHARACTER_RIDERLESS_HOG"},"100":{"name":"Super Rider","tid":"TID_CHARACTER_HOGLESS_RIDER"},"64":{"name":"Super Valkyrie","tid":"TID_CHARACTER_SUPER_VALKYRIE"},"66":{"name":"Super Witch","tid":"TID_CHARACTER_SUPER_WITCH"},"78":{"name":"Big Boy","tid":"TID_CHARACTER_BIG_BOY"},"76":{"name":"Ice Hound","tid":"TID_ICE_HOUND"},"85":{"name":"Ice Hound Pup","tid":"TID_ICE_PUP"},"79":{"name":"Defensive Ice Hound","tid":"TID_ICE_HOUND"},"80":{"name":"Super Bowler","tid":"TID_SUPER_BOWLER"},"51":{"name":"Wall Wrecker","tid":"TID_SIEGE_MACHINE_RAM"},"52":{"name":"Battle Blimp","tid":"TID_SIEGE_MACHINE_FLYER"},"62":{"name":"Stone Slammer","tid":"TID_SIEGE_MACHINE_BALLOON"},"75":{"name":"Siege Barracks","tid":"TID_SIEGE_MACHINE_CARRIER"},"87":{"name":"Log Launcher","tid":"TID_SIEGE_MACHINE_LOG_LAUNCHER"},"91":{"name":"Flame Flinger","tid":"TID_CHARACTER_SIEGE_MACHINE_CATAPULT"},"92":{"name":"Battle Drill","tid":"TID_CHARACTER_SIEGE_BATTLE_DRILL"},"135":{"name":"Troop Launcher","tid":"TID_CHARACTER_SIEGE_MACHINE_TROOP_CATAPULT"},"169":{"name":"Longshot","tid":"TID_INFERNO_GUARDIAN"},"170":{"name":"Smasher","tid":"TID_MELEE_AREA_GUARDIAN"},"30":{"name":"Ice Wizard","tid":"TID_WIZARD2"},"45":{"name":"Battle Ram","tid":"TID_BATTLERAM"},"46":{"name":"Battle Ram Barbarian","tid":"TID_BARBARIAN"},"47":{"name":"Royal Ghost","tid":"TID_GHOST"},"48":{"name":"Pumpkin Barbarian Armored","tid":"TID_PUMPKIN_BARBARIAN"},"49":{"name":"Pumpkin Barbarian Bare","tid":"TID_BARBARIAN"},"50":{"name":"Giant Skeleton","tid":"TID_GIANT_SKELETON"},"61":{"name":"Skeleton Barrel","tid":"TID_CHARACTER_SKELETON_BARREL"},"67":{"name":"MECHA","tid":"TID_MECHA"},"72":{"name":"Party Wizard","tid":"TID_PARTY_WIZARD"},"94":{"name":"Ram Rider","tid":"TID_CHARACTER_RAM_RIDER"},"101":{"name":"Barcher","tid":"TID_CHARACTER_BARCHER"},"102":{"name":"Witch Golem","tid":"TID_CHARACTER_GRAVE_GOLEM"},"116":{"name":"Witch Golem Skeleton","tid":"TID_SKELETON"},"117":{"name":"Witch Golem Big Boy","tid":"TID_CHARACTER_BIG_BOY"},"103":{"name":"Hog Wizard","tid":"TID_CHARACTER_HOG_WIZARD"},"104":{"name":"Lavaloon","tid":"TID_CHARACTER_LAVALOON"},"108":{"name":"Lavaloon Pup","tid":"TID_CHARACTER_LAVALOON_PUP"},"118":{"name":"COOKIE","tid":"TID_CHARACTER_COOKIE_PEKKA"},"119":{"name":"Firecracker","tid":"TID_CHARACTER_FIRECRACKER"},"120":{"name":"Azure Dragon","tid":"TID_CHARACTER_WATER_DRAGON"},"121":{"name":"Barbarian Kicker","tid":"TID_CHARACTER_FREE_KICKER"},"122":{"name":"Giant Thrower","tid":"TID_CHARACTER_SIDE_THROWER"},"125":{"name":"Broom Witch","tid":"TID_CHARACTER_COURIER"},"126":{"name":"Witch Spirit","tid":"TID_CHARACTER_COURIERSPAWN"},"130":{"name":"Ice Minion","tid":"TID_ICEMINION"},"136":{"name":"Tax Collector","tid":"TID_TAX_COLLECTOR"},"142":{"name":"Snake Barrel","tid":"TID_CHARACTER_SNAKE_BARREL"},"143":{"name":"Snake","tid":"TID_SNAKE"},"156":{"name":"Giant Giant","tid":"TID_CHARACTER_APRIL25GTG"},"157":{"name":"KANE","tid":"TID_CHARACTER_APRIL25TBRM"},"162":{"name":"Reborn KANE","tid":"TID_CHARACTER_APRIL25TBRM"},"158":{"name":"Disarmer","tid":"TID_CHARACTER_APRIL25BLTM"},"165":{"name":"Defensive Disarmer","tid":"TID_CHARACTER_APRIL25BLTM"},"159":{"name":"YEETer","tid":"TID_CHARACTER_APRIL25RRBL"},"163":{"name":"Tribal Tag Team","tid":"TID_CHARACTER_TRIBAL_TAG_TEAM"},"164":{"name":"Defensive YEETer","tid":"TID_CHARACTER_APRIL25RRBL"},"166":{"name":"Defensive Tribal Tag Team","tid":"TID_CHARACTER_TRIBAL_TAG_TEAM"},"167":{"name":"Event Meteor Golem","tid":"TID_METEOR_GOLEM"},"168":{"name":"Event Meteormite","tid":"TID_METEOR_GOLEM_SMALL"},"39":{"name":"Tutorial Goblin","tid":"TID_GOBLIN"},"89":{"name":"Tutorial Barbarian","tid":"TID_BARBARIAN"},"60":{"name":"Golden Dragon","tid":"TID_DRAGON"},"90":{"name":"MOMMA","tid":"TID_SUPER_CHARGED_PEKKA"},"145":{"name":"Mega COOKIE","tid":"TID_CHARACTER_COOKIE_PEKKA"},"88":{"name":"Defending Builder","tid":""},"96":{"name":"Icemite","tid":"TID_CHARACTER_ICE_SPIRIT"},"141":{"name":"Booger","tid":"TID_SNEEZY_SPAWN"},"73":{"name":"Spell Shielded Skeleton","tid":"TID_SKELETON"},"74":{"name":"Spell Unshielded Skeleton","tid":"TID_SKELETON"},"68":{"name":"Spell Bat","tid":"TID_BAT"},"113":{"name":"BouncingFrostmite","tid":"TID_CHARACTER_ICE_SPIRIT"},"175":{"name":"Totem","tid":"TID_GOLEM"},"19":{"name":"Trap Skeleton","tid":"TID_SKELETON"},"21":{"name":"Trap Air Skeleton","tid":"TID_AIR_SKELETON"},"20":{"name":"Trap Minion","tid":"TID_GARGOYLE"},"144":{"name":"BK Equipment Snake","tid":"TID_BARBKINGEQUIPSNAKE"},"146":{"name":"MP Equipment Henchman","tid":"TID_MINION_BODYGUARD"},"128":{"name":"GW Equipment Lavaloon","tid":"TID_CHARACTER_LAVALOON"},"129":{"name":"GW Equipment Lavaloon Pup","tid":"TID_CHARACTER_LAVALOON_PUP"},"93":{"name":"Prototype3","tid":"TID_BARBARIAN"},"109":{"name":"Ruin Witch","tid":"TID_CHARACTER_RUIN_WITCH"},"111":{"name":"Prototype4","tid":"TID_BARBARIAN"},"112":{"name":"Prototype5","tid":"TID_BARBARIAN"},"114":{"name":"Prototype6","tid":"TID_BARBARIAN"},"115":{"name":"Prototype7","tid":"TID_BARBARIAN"},"127":{"name":"Ruin Knight","tid":"TID_CHARACTER_RUIN_KNIGHT"},"131":{"name":"Prototype8","tid":"TID_BARBARIAN"},"133":{"name":"Prototype9","tid":"TID_BARBARIAN"},"134":{"name":"Prototype10","tid":"TID_BARBARIAN"},"137":{"name":"Prototype11","tid":"TID_BARBARIAN"},"138":{"name":"Prototype12","tid":"TID_BARBARIAN"},"139":{"name":"Prototype13","tid":"TID_BARBARIAN"},"140":{"name":"Prototype14","tid":"TID_BARBARIAN"},"153":{"name":"Prototype15","tid":"TID_BARBARIAN"},"154":{"name":"Prototype16","tid":"TID_BARBARIAN"},"155":{"name":"Prototype17","tid":"TID_BARBARIAN"},"160":{"name":"Unused2","tid":"TID_BARBARIAN"},"161":{"name":"Unused3","tid":"TID_BARBARIAN"},"171":{"name":"Guardian Eagle","tid":"TID_GOLEM"},"172":{"name":"Guardian Giga Inferno","tid":"TID_GOLEM"},"173":{"name":"Guardian Assassins","tid":"TID_GOLEM"},"174":{"name":"Guardian Reviver","tid":"TID_GOLEM"},"176":{"name":"Unused4","tid":"TID_BARBARIAN"},"25":{"name":"DEPRECATED","tid":"TID_MINER"},"31":{"name":"BB Raged Barbarian","tid":"TID_RAGED_BARBARIAN"},"32":{"name":"BB Sneaky Archer","tid":"TID_SNEAKY_ARCHER"},"34":{"name":"BB Boxer Giant","tid":"TID_IRONFIST_GIANT"},"33":{"name":"BB Beta Minion","tid":"TID_TOXIC_MINION"},"35":{"name":"BB Bomber","tid":"TID_BOMBER"},"41":{"name":"BB Baby Dragon","tid":"TID_BABY_DRAGON2"},"37":{"name":"BB Cannon Cart","tid":"TID_MOVING_CANNON"},"42":{"name":"BB Night Witch","tid":"TID_DARK_WITCH"},"43":{"name":"BB Bat","tid":"TID_BAT"},"105":{"name":"BB Enraged Bat","tid":"TID_BAT"},"38":{"name":"BB Drop Ship","tid":"TID_BALLOON_CARRIER"},"40":{"name":"BB Drop Ship Skeleton","tid":"TID_SKELETON"},"36":{"name":"BB Power PEKKA","tid":"TID_SUPER_CHARGED_PEKKA"},"70":{"name":"BB Hog Glider","tid":"TID_HOG_GLIDER"},"71":{"name":"BB Hog Rider","tid":"TID_HOG_RIDER"},"106":{"name":"BB Electrofire Wizard","tid":"TID_ELECTROFIRE_WIZARD"},"107":{"name":"BB Zappy","tid":"TID_ZAPPY"},"44":{"name":"BB MovingCannonSecondary","tid":"TID_MOVING_CANNON"},"181":{"name":"Guardian Sniffer","tid":"TID_SNIFFER_GUARDIAN"},"182":{"name":"Guardian Builder","tid":"TID_BUILDER_GUARDIAN"},"183":{"name":"Guardian Logger","tid":"TID_LOGGER_GUARDIAN"},"184":{"name":"Guardian Returner","tid":"TID_RETURNER_GUARDIAN"},"186":{"name":"Elephant","tid":"TID_CHARACTER_ELEPHANT"},"187":{"name":"Rider","tid":"TID_CHARACTER_ELEPHANT_RIDER_DEPLOYED"},"188":{"name":"Air Troop Launcher","tid":"TID_SIEGE_MACHINE_AIR_TROOP_LAUNCHER"},"189":{"name":"UnusedSiegePrototype","tid":"TID_SIEGE_MACHINE_RAM"},"185":{"name":"Elephant Rider","tid":"TID_CHARACTER_ELEPHANT_RIDER"},"191":{"name":"Undead Wrestler Big Boy","tid":"TID_CHARACTER_UNDEAD_WRESTLER_BIG_BOY"},"192":{"name":"Ruin Witch_DEF","tid":"TID_CHARACTER_RUIN_WITCH"},"190":{"name":"UndeadWrestler","tid":"TID_CHARACTER_UNDEAD_WRESTLER"},"193":{"name":"Tiny Totem","tid":""},"194":{"name":"Totem Thrower","tid":"TID_CHARACTER_TOTEM_THROWER"},"195":{"name":"Barcher Squad","tid":"TID_BARCHER_SQUAD"},"196":{"name":"Giant Wizard Squad","tid":"TID_GIANT_WIZARD_SQUAD"},"197":{"name":"Wall Breaker Squad","tid":"TID_WALL_BREAKER_SQUAD"},"198":{"name":"Minion Squad","tid":"TID_MINION_SQUAD"},"199":{"name":"Balloon Squad","tid":"TID_BALLOON_SQUAD"},"200":{"name":"Golemwitch Squad","tid":"TID_GOLEMWITCH_SQUAD"},"201":{"name":"Hog Rider Squad","tid":"TID_HOG_RIDER_SQUAD"},"202":{"name":"Miner Squad","tid":"TID_MINER_SQUAD"},"203":{"name":"Healer Squad","tid":"TID_HEALER_SQUAD"},"204":{"name":"PEKKA Etitan Squad","tid":"TID_PEKKA_ETITAN_SQUAD"},"205":{"name":"Dragon Squad","tid":"TID_DRAGON_SQUAD"},"206":{"name":"Baby Dragon Squad","tid":"TID_BABY_DRAGON_SQUAD"},"207":{"name":"Seasonal Defense Spear Goblin","tid":"TID_CHARACTER_SPEAR_GOBLIN"},"208":{"name":"Christmas Yeti","tid":"TID_CHARACTER_CHRISTMAS_YETI"},"209":{"name":"ChristmasYetiMite","tid":"TID_CHARACTER_CHRISTMAS_YETI_MITE"},"210":{"name":"FireGoat","tid":"TID_CHARACTER_FIRE_GOAT"},"211":{"name":"FireGoatMini","tid":"TID_CHARACTER_FIRE_GOAT_MINI"},"212":{"name":"FireGoatAdult","tid":"TID_CHARACTER_FIRE_GOAT"}},"spells":{"0":{"name":"Lightning","tid":"TID_LIGHTNING_STORM"},"1":{"name":"Healing","tid":"TID_HEALING_WAVE"},"2":{"name":"Rage","tid":"TID_HASTE"},"3":{"name":"Jump","tid":"TID_JUMP_SPELL"},"5":{"name":"Freeze","tid":"TID_FREEZE_SPELL"},"16":{"name":"Clone","tid":"TID_DUPLICATE_SPELL"},"35":{"name":"Invisibility","tid":"TID_INVISIBILITY_SPELL"},"53":{"name":"Recall","tid":"TID_SPELL_RECALL"},"98":{"name":"Revive","tid":"TID_SPELL_REVIVE"},"120":{"name":"Totem Spell","tid":"TID_TOTEM_SPELL"},"9":{"name":"Poison","tid":"TID_POISON_CLOUD"},"10":{"name":"Earthquake","tid":"TID_EARTHQUAKE"},"11":{"name":"Haste","tid":"TID_SPEEDUP"},"17":{"name":"Skeleton Spell","tid":"TID_CREATE_SKELETONS_SPELL"},"28":{"name":"Bat Spell","tid":"TID_SPELL_BATS"},"70":{"name":"Overgrowth","tid":"TID_SPELL_OVERGROWTH"},"109":{"name":"Ice Block","tid":"TID_ICE_BLOCK_SPELL"},"4":{"name":"xmas","tid":"TID_XMAS_SPELL"},"6":{"name":"Santas Surprise","tid":"TID_XMAS_SPELL"},"7":{"name":"Slow","tid":"TID_SLOW_SPELL"},"8":{"name":"BoostDefences","tid":"TID_BOOSTDEFENCES_SPELL"},"12":{"name":"Eternal Tome Aura","tid":""},"13":{"name":"Life Gem Aura","tid":""},"14":{"name":"Eagle Artillery Hit Spell","tid":""},"15":{"name":"MiniGrowth","tid":""},"18":{"name":"FreezeTrap","tid":""},"19":{"name":"Lava Launcher Hit Spell","tid":""},"20":{"name":"TroopRage","tid":""},"21":{"name":"ShrinkTrap","tid":""},"22":{"name":"Birthday2017","tid":"TID_BIRTHDAY_SPELL"},"23":{"name":"IceGolemFreeze","tid":""},"24":{"name":"ElectroDragonDie","tid":""},"25":{"name":"Tornado Trap","tid":""},"26":{"name":"TroopHaste","tid":""},"27":{"name":"ProtoSpell2","tid":"TID_LIGHTNING_STORM"},"29":{"name":"IceGolemFreeze_DEF","tid":""},"30":{"name":"Scattershot Hit Spell","tid":""},"31":{"name":"BatRage","tid":""},"32":{"name":"TH13 Frost","tid":""},"33":{"name":"Electro Titan Aura","tid":""},"34":{"name":"EliteValkyrieRage","tid":""},"36":{"name":"IceHoundFreeze","tid":""},"37":{"name":"TH14 Poison","tid":""},"38":{"name":"FireSpiritExplosion","tid":""},"39":{"name":"PhoenixImmortality","tid":""},"40":{"name":"TroopImmortality","tid":""},"41":{"name":"AreaStun","tid":""},"42":{"name":"DrillerSurfacing","tid":""},"43":{"name":"TH15 Poison","tid":""},"44":{"name":"Spell Tower Poison","tid":"TID_POISON_CLOUD_TOWER"},"45":{"name":"SuperHogRiderSummonHog","tid":""},"46":{"name":"Spell Tower Rage","tid":"TID_HASTE_TOWER"},"47":{"name":"SuperHogRiderSummonRider","tid":""},"48":{"name":"Spell Tower Invisibility","tid":"TID_INVISIBILITY_SPELL_TOWER"},"49":{"name":"GraveGolemSummonBigBoy","tid":""},"50":{"name":"HogWizardDamageAura","tid":""},"51":{"name":"Unused1","tid":""},"52":{"name":"COOKIEAura","tid":""},"54":{"name":"GrandWardenRangeRing","tid":""},"55":{"name":"PoisonLizardAttack","tid":""},"56":{"name":"RamRiderDestroyWalls","tid":"TID_RAM_RIDER_ABILITY_TITLE"},"57":{"name":"SlowBomb","tid":""},"58":{"name":"VisualRage","tid":""},"59":{"name":"Baby Dragon Flaming Sneeze","tid":""},"60":{"name":"Power PEKKA Overcharge","tid":""},"61":{"name":"Drop Ship Skeleton Bomb","tid":""},"62":{"name":"Night Witch Bat Swarm","tid":""},"63":{"name":"Cannon Cart Mortar Mode Splash","tid":""},"64":{"name":"Apprentice Aura","tid":""},"65":{"name":"PetJump","tid":""},"66":{"name":"PetSpeedUp","tid":""},"67":{"name":"FireSpiritBurn","tid":""},"68":{"name":"TreantWallDamageAura","tid":""},"69":{"name":"SiegeInvisibility","tid":""},"71":{"name":"Heroic Torch Aura","tid":""},"72":{"name":"Blizzard","tid":"TID_FREEZE_SPELL"},"73":{"name":"BagOfFrostmites","tid":"TID_SPELL_BAG_OF_FROSTMITES"},"74":{"name":"TroopCatapultSummonTroop","tid":""},"75":{"name":"LavaloonSpawnPup","tid":""},"76":{"name":"Firecracker Hit Spell","tid":""},"77":{"name":"Earthquake Boots Spell","tid":"TID_EARTHQUAKE"},"78":{"name":"Fireball Hit Spell","tid":""},"79":{"name":"Rage Gem Aura","tid":""},"80":{"name":"QueenFreeze","tid":""},"81":{"name":"ElectrifiedShield","tid":""},"82":{"name":"BarbarianKingDestroyWalls","tid":"TID_RAM_RIDER_ABILITY_TITLE"},"83":{"name":"Healing Tome Aura","tid":""},"84":{"name":"Yellow Card","tid":"TID_SPELL_YELLOW_CARD"},"85":{"name":"GWPhoenixStickSpell","tid":""},"86":{"name":"BattleDruidHeal","tid":"TID_HEALING_WAVE"},"87":{"name":"Electro Boots Aura","tid":""},"88":{"name":"GWLavaloonSpawnPup","tid":""},"89":{"name":"IceMinionFreeze","tid":""},"90":{"name":"Commander Aura","tid":""},"91":{"name":"TroopCatapultSummonTroopNew","tid":""},"92":{"name":"TorchThrowerB","tid":""},"93":{"name":"Destroyer","tid":""},"94":{"name":"Debris Explosion 1","tid":"TID_LIGHTNING_STORM"},"95":{"name":"Debris Explosion 2","tid":"TID_EARTHQUAKE"},"96":{"name":"FireSpiritBurn_DEF","tid":""},"97":{"name":"Resurrect","tid":"TID_SPELL_REVIVE"},"99":{"name":"TH17WeaponAreaDamage","tid":""},"100":{"name":"BarbKingEquipSpawn","tid":""},"101":{"name":"MassDestruction","tid":"TID_SPELL_MASS_DESTRUCTION"},"102":{"name":"MinionGiantPoison","tid":"TID_POISON_CLOUD"},"103":{"name":"Unused2","tid":""},"104":{"name":"Unused3","tid":""},"105":{"name":"April25_TBRM_Aura","tid":""},"106":{"name":"April25_TBRM_DeathSpawn","tid":""},"107":{"name":"April25_RRAltProjectile_Spawn","tid":""},"108":{"name":"April25_RRAltProjectile_Spawn_DEF","tid":""},"110":{"name":"MPMeteorStaffSpell","tid":""},"111":{"name":"MeteorGolemImpactSpell","tid":""},"112":{"name":"TH18EventMeteorDeathDamage","tid":""},"113":{"name":"SmasherRageArea","tid":""},"114":{"name":"SlowdownTowerSlowness","tid":"TID_POISON_CLOUD_TOWER"},"115":{"name":"GuardianRage","tid":""},"116":{"name":"GuardianReviveSpell","tid":""},"117":{"name":"SeasonalDefenseHeroBoosterRageAura","tid":""},"118":{"name":"SeasonalDefenseHeroBoosterHealthBoostAura","tid":""},"119":{"name":"Debris Explosion 3","tid":"TID_LIGHTNING_STORM"},"121":{"name":"TotemSummon","tid":""},"122":{"name":"PhoenixSpell","tid":"TID_HEALING_WAVE"},"123":{"name":"AngrySpell","tid":"TID_ANGRY_SPELL_ANGER"},"124":{"name":"Unused4","tid":""},"125":{"name":"Unused5","tid":""},"126":{"name":"Clashmas25FireArea","tid":""},"127":{"name":"LNY26HealingArea","tid":""},"128":{"name":"LNY26DeathDamage","tid":""},"129":{"name":"Lava Launcher Hit Spell_Seasonal_Defense","tid":""},"130":{"name":"Spell Tower Earthquake","tid":"TID_EARTHQUAKE"},"131":{"name":"DragonDukeDashAura","tid":""},"132":{"name":"DragonDukeRingOfFire","tid":""},"133":{"name":"DragonDukeFireBlast","tid":""},"134":{"name":"DragonCrownExplosion","tid":""},"135":{"name":"DDBlastSpell","tid":""},"136":{"name":"DragonDukeFireBlastMini","tid":""},"137":{"name":"GuardianBuilderRageSpell","tid":""},"138":{"name":"ElephantRiderSummonElephant","tid":""},"139":{"name":"ElephantRiderSummonRider","tid":""},"141":{"name":"AirTroopSummon","tid":""},"142":{"name":"CakeThrowerExplosion","tid":""},"140":{"name":"UndeadWrestlerDeathSpawn","tid":""},"148":{"name":"Blizzard Axe Aura","tid":""},"143":{"name":"TinyTotemImpact","tid":""},"144":{"name":"TinyTotemSummon","tid":""},"145":{"name":"CakeThrowerExplosion2","tid":""},"146":{"name":"CakeThrowerExplosion3","tid":""},"147":{"name":"CakeThrowerExplosion4","tid":""},"149":{"name":"GoblinThrowerTowerSummon","tid":""},"150":{"name":"Firecracker Tower Hit Spell","tid":""},"151":{"name":"ShieldBroochBurst","tid":""},"152":{"name":"ChristmasYetiMiteFreeze","tid":""},"153":{"name":"Heroic Spell","tid":"TID_SPELL_HEROIC_SPELL"},"154":{"name":"FireGoatSummonLamb","tid":""}},"heroes":{"0":{"name":"Barbarian King","tid":"TID_BARBARIAN_KING"},"1":{"name":"Archer Queen","tid":"TID_ARCHER_QUEEN"},"2":{"name":"Grand Warden","tid":"TID_GRAND_WARDEN"},"3":{"name":"BB Battle Machine","tid":"TID_WARMACHINE"},"4":{"name":"Royal Champion","tid":"TID_HERO_ROYAL_CHAMPION"},"5":{"name":"BB Battle Copter","tid":"TID_HERO_BATTLE_COPTER"},"6":{"name":"Minion Prince","tid":"TID_MINION_HERO"},"7":{"name":"Dragon Duke","tid":"TID_DRAGON_DUKE"}},"pets":{"0":{"name":"LASSI","tid":"TID_PET_MELEEJUMPER"},"1":{"name":"Mighty Yak","tid":"TID_PET_WALLBUSTER"},"2":{"name":"Electro Owl","tid":"TID_PET_RANGEDATTACKER"},"3":{"name":"Unicorn","tid":"TID_PET_HEALER"},"4":{"name":"Phoenix","tid":"TID_PET_PHOENIX"},"5":{"name":"Phoenix Egg","tid":"TID_PET_PHOENIX"},"6":{"name":"Stork","tid":"TID_PET_HEALER"},"7":{"name":"Poison Lizard","tid":"TID_PET_POISON_LIZARD"},"8":{"name":"Diggy","tid":"TID_PET_DIGGY"},"9":{"name":"Frosty","tid":"TID_PET_FROSTY"},"10":{"name":"Spirit Fox","tid":"TID_PET_SPIRIT_FOX"},"11":{"name":"Angry Jelly","tid":"TID_PET_ANGRY_JELLY"},"12":{"name":"JumpAuraPet","tid":"TID_PET_MELEEJUMPER"},"13":{"name":"SpeedupPet","tid":"TID_PET_RANGEDATTACKER"},"14":{"name":"Turtle","tid":"TID_PET_MELEEJUMPER"},"15":{"name":"AirSplitPetSpawnRemoved","tid":"TID_PET_RANGEDATTACKER"},"16":{"name":"Sneezy","tid":"TID_PET_SNEEZY"},"17":{"name":"Crow","tid":"TID_PET_RAVEN"}},"equipment":{"0":{"name":"Barbarian Puppet","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"1":{"name":"Rage Vial","tid":"TID_GEAR_TITLE_IRON_FIST"},"2":{"name":"Archer Puppet","tid":"TID_GEAR_TITLE_ARCHER_CROWN"},"3":{"name":"Invisibility Vial","tid":"TID_GEAR_TITLE_ROYAL_CLOAK"},"4":{"name":"Eternal Tome","tid":"TID_GEAR_TITLE_ETERNAL_TOME"},"5":{"name":"Life Gem","tid":"TID_GEAR_TITLE_LIFE_GEM"},"6":{"name":"Seeking Shield","tid":"TID_GEAR_TITLE_SEEKING_SHIELD"},"7":{"name":"Royal Gem","tid":"TID_GEAR_PROTECTIVE_CLOAK"},"8":{"name":"Earthquake Boots","tid":"TID_GEAR_EARTHQUAKE_BOOTS"},"9":{"name":"Hog Rider Puppet","tid":"TID_GEAR_HOG_TOTEM"},"10":{"name":"Giant Gauntlet","tid":"TID_GEAR_GIANT_GAUNTLET"},"11":{"name":"Vampstache","tid":"TID_GEAR_VAMPSTACHE"},"12":{"name":"Haste Vial","tid":"TID_GEAR_TITLE_HASTE_VIAL"},"13":{"name":"Rocket Spear","tid":"TID_GEAR_ROCKET_SPEAR"},"14":{"name":"Spiky Ball","tid":"TID_GEAR_TITLE_FOOTBALL"},"15":{"name":"Frozen Arrow","tid":"TID_GEAR_FROZEN_ARROW"},"16":{"name":"Monolith Arrow","tid":"TID_GEAR_MONOLITH_ARROW"},"17":{"name":"Giant Arrow","tid":"TID_GEAR_GIANT_ARROW"},"18":{"name":"UNUSED2","tid":"TID_GEAR_GIANT_ARROW"},"19":{"name":"Heroic Torch","tid":"TID_GEAR_TITLE_HEROIC_TORCH"},"20":{"name":"Healer Puppet","tid":"TID_GEAR_HEALER_JAR"},"21":{"name":"UNUSED3","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"22":{"name":"Fireball","tid":"TID_GEAR_FIRE_IN_A_CAN"},"23":{"name":"UNUSED4","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"24":{"name":"Rage Gem","tid":"TID_GEAR_ANGRY_TOME"},"25":{"name":"UNUSED5","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"26":{"name":"UNUSED6","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"27":{"name":"UNUSED7","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"28":{"name":"UNUSED8","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"29":{"name":"UNUSED9","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"30":{"name":"UNUSED10","tid":"TID_GEAR_HOG_TOTEM"},"31":{"name":"UNUSED11","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"32":{"name":"Snake Bracelet","tid":"TID_GEAR_TITLE_SNAKE_ARMOR"},"33":{"name":"UNUSED13","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"34":{"name":"Healing Tome","tid":"TID_GEAR_HEALING_TOME"},"35":{"name":"Dark Crown","tid":"TID_GEAR_DARK_CROWN"},"36":{"name":"UNUSED15","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"37":{"name":"UNUSED16","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"38":{"name":"UNUSED17","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"39":{"name":"Magic Mirror","tid":"TID_GEAR_TITLE_CLONING_CLOAK"},"40":{"name":"Electro Boots","tid":"TID_GEAR_ELECTRO_SHIELD"},"41":{"name":"Lavaloon Puppet","tid":"TID_GEAR_LAVALOON_PUPPET"},"42":{"name":"Henchmen Puppet","tid":"TID_GEAR_TITLE_MINION_BODYGUARDS"},"43":{"name":"Dark Orb","tid":"TID_GEAR_TITLE_DARK_ORB"},"44":{"name":"Metal Pants","tid":"TID_GEAR_TITLE_STONE_AMULET"},"45":{"name":"MP Trap Shield","tid":"TID_GEAR_TITLE_TRAP_SHIELD"},"46":{"name":"Punch Arrow","tid":"TID_GEAR_TITLE_CLONING_CLOAK"},"47":{"name":"Noble Iron","tid":"TID_GEAR_TITLE_TURBO_START"},"48":{"name":"Action Figure","tid":"TID_GEAR_ACTION_FIGURE"},"49":{"name":"Meteor Staff","tid":"TID_GEAR_METEOR_WAND"},"50":{"name":"Frost Charm","tid":"TID_GEAR_FROST_CHARM"},"51":{"name":"Stick Horse","tid":"TID_GEAR_TITLE_STICK_HORSE"},"52":{"name":"Fire Heart","tid":"TID_GEAR_TITLE_FIRE_HEART"},"53":{"name":"Rocket Backpack","tid":"TID_GEAR_TITLE_DEADLY_DASH"},"54":{"name":"Deadly Dash2","tid":"TID_GEAR_TITLE_DEADLY_DASH"},"55":{"name":"Deadly Dash3","tid":"TID_GEAR_TITLE_DEADLY_DASH"},"56":{"name":"Stun Blaster","tid":"TID_GEAR_TITLE_STUN_BLAST"},"57":{"name":"Flame Blower","tid":"TID_GEAR_TITLE_FLAME_BREATH"},"58":{"name":"FlameAttack","tid":"TID_GEAR_TITLE_STUN_BLAST"},"59":{"name":"ElectroAttack","tid":"TID_GEAR_TITLE_ELECTRO_ATTACK"},"60":{"name":"Draconic Counter","tid":"TID_GEAR_DRAGON_REFLECTOR"},"61":{"name":"Cosmic Portal","tid":"TID_GEAR_TITLE_COSMIC_PORTAL"},"62":{"name":"Shield Brooch","tid":"TID_GEAR_TITLE_SHIELD_BROOCH"},"63":{"name":"Blizzard Axe","tid":"TID_GEAR_TITLE_BLIZZARD_AXE"}}},"ultimate":{"version":"19.32.14","troops":{"0":{"name":"Barbarian","tid":"TID_BARBARIAN"},"1":{"name":"Archer","tid":"TID_ARCHER"},"3":{"name":"Giant","tid":"TID_GIANT"},"2":{"name":"Goblin","tid":"TID_GOBLIN"},"4":{"name":"Wall Breaker","tid":"TID_WALL_BREAKER"},"5":{"name":"Balloon","tid":"TID_GOBLIN_BALLOON"},"6":{"name":"Wizard","tid":"TID_WIZARD"},"7":{"name":"Healer","tid":"TID_HEALER"},"8":{"name":"Dragon","tid":"TID_DRAGON"},"9":{"name":"PEKKA","tid":"TID_PEKKA"},"23":{"name":"Baby Dragon","tid":"TID_BABY_DRAGON"},"24":{"name":"Miner","tid":"TID_MINER"},"59":{"name":"Electro Dragon","tid":"TID_LIGHTNINGDRAGON"},"53":{"name":"Yeti","tid":"TID_CHARACTER_YETI"},"54":{"name":"Yetimite","tid":"TID_CHARACTER_YETIMITE"},"65":{"name":"Dragon Rider","tid":"TID_CHARACTER_MECHA_DRAGON"},"103":{"name":"Electro Titan","tid":"TID_CHARACTER_ELECTRO_TITAN"},"118":{"name":"Root Rider","tid":"TID_CHARACTER_TREANT"},"140":{"name":"Thrower","tid":"TID_CHARACTER_THROWER"},"193":{"name":"Meteor Golem","tid":"TID_METEOR_GOLEM"},"194":{"name":"Meteormite","tid":"TID_METEOR_GOLEM_SMALL"},"195":{"name":"Defensive Meteor Golem","tid":"TID_METEOR_GOLEM"},"196":{"name":"Defensive Meteormite","tid":"TID_METEOR_GOLEM_SMALL"},"10":{"name":"Minion","tid":"TID_GARGOYLE"},"11":{"name":"Hog Rider","tid":"TID_BOARRIDER"},"12":{"name":"Valkyrie","tid":"TID_WARRIORGIRL"},"13":{"name":"Golem","tid":"TID_GOLEM"},"14":{"name":"Golemite","tid":"TID_GOLEM_SEC"},"15":{"name":"Witch","tid":"TID_WARLOCK"},"16":{"name":"Skeleton","tid":"TID_SKELETON"},"17":{"name":"Lava Hound","tid":"TID_AD_SEEKER"},"18":{"name":"Lava Pup","tid":"TID_AD_SEEKER_FRAG"},"77":{"name":"Defensive Lava Hound","tid":"TID_AD_SEEKER"},"22":{"name":"Bowler","tid":"TID_BOWLER"},"58":{"name":"Ice Golem","tid":"TID_ICEGOLEM"},"69":{"name":"Defensive Ice Golem","tid":"TID_ICEGOLEM"},"90":{"name":"Headhunter","tid":"TID_CHARACTER_HEADHUNTER"},"105":{"name":"Apprentice Warden","tid":"TID_CHARACTER_APPRENTICE_WARDEN"},"131":{"name":"Druid","tid":"TID_CHARACTER_SHAPESHIFTER_DRUID"},"132":{"name":"Bear","tid":"TID_CHARACTER_SHAPESHIFTER_DRUID_BEAR"},"158":{"name":"Furnace","tid":"TID_CHARACTER_FURNACE"},"157":{"name":"Firemite Spawn","tid":"TID_CHARACTER_FIREMITE"},"159":{"name":"Furnace_DEF","tid":"TID_CHARACTER_FURNACE"},"160":{"name":"Firemite Spawn_DEF","tid":"TID_CHARACTER_FIREMITE"},"26":{"name":"Super Barbarian","tid":"TID_CHARACTER_ELITE_BARBARIAN"},"27":{"name":"Super Archer","tid":"TID_CHARACTER_MAGIC_ARCHER"},"29":{"name":"Super Giant","tid":"TID_CHARACTER_ELITE_GIANT"},"55":{"name":"Sneaky Goblin","tid":"TID_CHARACTER_ELITE_GOBLIN"},"28":{"name":"Super Wall Breaker","tid":"TID_CHARACTER_ELITE_WALLBREAKER"},"57":{"name":"Rocket Balloon","tid":"TID_CHARACTER_HASTY_BALLOON"},"91":{"name":"Super Wizard","tid":"TID_SUPER_WIZARD"},"89":{"name":"Super Dragon","tid":"TID_SUPER_DRAGON"},"63":{"name":"Inferno Dragon","tid":"TID_CHARACTER_INFERNO_DRAGON"},"56":{"name":"Super Miner","tid":"TID_SUPER_MINER"},"155":{"name":"Super Yeti","tid":"TID_CHARACTER_SUPER_YETI"},"156":{"name":"Electromite","tid":"TID_CHARACTER_ELECTROMITE"},"92":{"name":"Super Minion","tid":"TID_SUPER_MINION"},"94":{"name":"Defensive Super Minion","tid":"TID_SUPER_MINION"},"106":{"name":"Super Hog Rider","tid":"TID_CHARACTER_SUPER_HOG_RIDER"},"107":{"name":"Super Hog","tid":"TID_CHARACTER_RIDERLESS_HOG"},"108":{"name":"Super Rider","tid":"TID_CHARACTER_HOGLESS_RIDER"},"64":{"name":"Super Valkyrie","tid":"TID_CHARACTER_SUPER_VALKYRIE"},"66":{"name":"Super Witch","tid":"TID_CHARACTER_SUPER_WITCH"},"78":{"name":"Big Boy","tid":"TID_CHARACTER_BIG_BOY"},"76":{"name":"Ice Hound","tid":"TID_ICE_HOUND"},"93":{"name":"Ice Hound Pup","tid":"TID_ICE_PUP"},"79":{"name":"Defensive Ice Hound","tid":"TID_ICE_HOUND"},"80":{"name":"Super Bowler","tid":"TID_SUPER_BOWLER"},"51":{"name":"Wall Wrecker","tid":"TID_SIEGE_MACHINE_RAM"},"52":{"name":"Battle Blimp","tid":"TID_SIEGE_MACHINE_FLYER"},"62":{"name":"Stone Slammer","tid":"TID_SIEGE_MACHINE_BALLOON"},"75":{"name":"Siege Barracks","tid":"TID_SIEGE_MACHINE_CARRIER"},"95":{"name":"Log Launcher","tid":"TID_SIEGE_MACHINE_LOG_LAUNCHER"},"99":{"name":"Flame Flinger","tid":"TID_CHARACTER_SIEGE_MACHINE_CATAPULT"},"100":{"name":"Battle Drill","tid":"TID_CHARACTER_SIEGE_BATTLE_DRILL"},"143":{"name":"Troop Launcher","tid":"TID_CHARACTER_SIEGE_MACHINE_TROOP_CATAPULT"},"177":{"name":"Longshot","tid":"TID_INFERNO_GUARDIAN"},"186":{"name":"Smasher","tid":"TID_MELEE_AREA_GUARDIAN"},"30":{"name":"Ice Wizard","tid":"TID_WIZARD2"},"45":{"name":"Battle Ram","tid":"TID_BATTLERAM"},"46":{"name":"Battle Ram Barbarian","tid":"TID_BARBARIAN"},"47":{"name":"Royal Ghost","tid":"TID_GHOST"},"48":{"name":"Pumpkin Barbarian Armored","tid":"TID_PUMPKIN_BARBARIAN"},"49":{"name":"Pumpkin Barbarian Bare","tid":"TID_BARBARIAN"},"50":{"name":"Giant Skeleton","tid":"TID_GIANT_SKELETON"},"61":{"name":"Skeleton Barrel","tid":"TID_CHARACTER_SKELETON_BARREL"},"67":{"name":"MECHA","tid":"TID_MECHA"},"72":{"name":"Party Wizard","tid":"TID_PARTY_WIZARD"},"102":{"name":"Ram Rider","tid":"TID_CHARACTER_RAM_RIDER"},"109":{"name":"Barcher","tid":"TID_CHARACTER_BARCHER"},"110":{"name":"Witch Golem","tid":"TID_CHARACTER_GRAVE_GOLEM"},"124":{"name":"Witch Golem Skeleton","tid":"TID_SKELETON"},"125":{"name":"Witch Golem Big Boy","tid":"TID_CHARACTER_BIG_BOY"},"111":{"name":"Hog Wizard","tid":"TID_CHARACTER_HOG_WIZARD"},"112":{"name":"Lavaloon","tid":"TID_CHARACTER_LAVALOON"},"116":{"name":"Lavaloon Pup","tid":"TID_CHARACTER_LAVALOON_PUP"},"126":{"name":"COOKIE","tid":"TID_CHARACTER_COOKIE_PEKKA"},"127":{"name":"Firecracker","tid":"TID_CHARACTER_FIRECRACKER"},"128":{"name":"Azure Dragon","tid":"TID_CHARACTER_WATER_DRAGON"},"129":{"name":"Barbarian Kicker","tid":"TID_CHARACTER_FREE_KICKER"},"130":{"name":"Giant Thrower","tid":"TID_CHARACTER_SIDE_THROWER"},"133":{"name":"Broom Witch","tid":"TID_CHARACTER_COURIER"},"134":{"name":"Witch Spirit","tid":"TID_CHARACTER_COURIERSPAWN"},"138":{"name":"Ice Minion","tid":"TID_ICEMINION"},"144":{"name":"Tax Collector","tid":"TID_TAX_COLLECTOR"},"150":{"name":"Snake Barrel","tid":"TID_CHARACTER_SNAKE_BARREL"},"151":{"name":"Snake","tid":"TID_SNAKE"},"164":{"name":"Giant Giant","tid":"TID_CHARACTER_APRIL25GTG"},"165":{"name":"KANE","tid":"TID_CHARACTER_APRIL25TBRM"},"170":{"name":"Reborn KANE","tid":"TID_CHARACTER_APRIL25TBRM"},"166":{"name":"Disarmer","tid":"TID_CHARACTER_APRIL25BLTM"},"173":{"name":"Defensive Disarmer","tid":"TID_CHARACTER_APRIL25BLTM"},"167":{"name":"YEETer","tid":"TID_CHARACTER_APRIL25RRBL"},"171":{"name":"Tribal Tag Team","tid":"TID_CHARACTER_TRIBAL_TAG_TEAM"},"172":{"name":"Defensive YEETer","tid":"TID_CHARACTER_APRIL25RRBL"},"174":{"name":"Defensive Tribal Tag Team","tid":"TID_CHARACTER_TRIBAL_TAG_TEAM"},"175":{"name":"Event Meteor Golem","tid":"TID_METEOR_GOLEM"},"176":{"name":"Event Meteormite","tid":"TID_METEOR_GOLEM_SMALL"},"39":{"name":"Tutorial Goblin","tid":"TID_GOBLIN"},"97":{"name":"Tutorial Barbarian","tid":"TID_BARBARIAN"},"60":{"name":"Golden Dragon","tid":"TID_DRAGON"},"98":{"name":"MOMMA","tid":"TID_SUPER_CHARGED_PEKKA"},"153":{"name":"Mega COOKIE","tid":"TID_CHARACTER_COOKIE_PEKKA"},"96":{"name":"Defending Builder","tid":""},"104":{"name":"Icemite","tid":"TID_CHARACTER_ICE_SPIRIT"},"149":{"name":"Booger","tid":"TID_SNEEZY_SPAWN"},"73":{"name":"Spell Shielded Skeleton","tid":"TID_SKELETON"},"74":{"name":"Spell Unshielded Skeleton","tid":"TID_SKELETON"},"68":{"name":"Spell Bat","tid":"TID_BAT"},"121":{"name":"BouncingFrostmite","tid":"TID_CHARACTER_ICE_SPIRIT"},"191":{"name":"Totem","tid":"TID_GOLEM"},"19":{"name":"Trap Skeleton","tid":"TID_SKELETON"},"21":{"name":"Trap Air Skeleton","tid":"TID_AIR_SKELETON"},"20":{"name":"Trap Minion","tid":"TID_GARGOYLE"},"152":{"name":"BK Equipment Snake","tid":"TID_BARBKINGEQUIPSNAKE"},"154":{"name":"MP Equipment Henchman","tid":"TID_MINION_BODYGUARD"},"136":{"name":"GW Equipment Lavaloon","tid":"TID_CHARACTER_LAVALOON"},"137":{"name":"GW Equipment Lavaloon Pup","tid":"TID_CHARACTER_LAVALOON_PUP"},"101":{"name":"Prototype3","tid":"TID_BARBARIAN"},"117":{"name":"Ruin Witch","tid":"TID_CHARACTER_RUIN_WITCH"},"119":{"name":"Prototype4","tid":"TID_BARBARIAN"},"120":{"name":"Prototype5","tid":"TID_BARBARIAN"},"122":{"name":"Prototype6","tid":"TID_BARBARIAN"},"123":{"name":"Prototype7","tid":"TID_BARBARIAN"},"135":{"name":"Ruin Knight","tid":"TID_CHARACTER_RUIN_KNIGHT"},"139":{"name":"Prototype8","tid":"TID_BARBARIAN"},"141":{"name":"Prototype9","tid":"TID_BARBARIAN"},"142":{"name":"Prototype10","tid":"TID_BARBARIAN"},"145":{"name":"Prototype11","tid":"TID_BARBARIAN"},"146":{"name":"Prototype12","tid":"TID_BARBARIAN"},"147":{"name":"Prototype13","tid":"TID_BARBARIAN"},"148":{"name":"Prototype14","tid":"TID_BARBARIAN"},"161":{"name":"Prototype15","tid":"TID_BARBARIAN"},"162":{"name":"Prototype16","tid":"TID_BARBARIAN"},"163":{"name":"Prototype17","tid":"TID_BARBARIAN"},"168":{"name":"Unused2","tid":"TID_BARBARIAN"},"169":{"name":"Unused3","tid":"TID_BARBARIAN"},"187":{"name":"Guardian Eagle","tid":"TID_GOLEM"},"188":{"name":"Guardian Giga Inferno","tid":"TID_GOLEM"},"189":{"name":"Guardian Assassins","tid":"TID_GOLEM"},"190":{"name":"Guardian Reviver","tid":"TID_GOLEM"},"192":{"name":"Unused4","tid":"TID_BARBARIAN"},"25":{"name":"DEPRECATED","tid":"TID_MINER"},"31":{"name":"BB Raged Barbarian","tid":"TID_RAGED_BARBARIAN"},"32":{"name":"BB Sneaky Archer","tid":"TID_SNEAKY_ARCHER"},"34":{"name":"BB Boxer Giant","tid":"TID_IRONFIST_GIANT"},"33":{"name":"BB Beta Minion","tid":"TID_TOXIC_MINION"},"35":{"name":"BB Bomber","tid":"TID_BOMBER"},"41":{"name":"BB Baby Dragon","tid":"TID_BABY_DRAGON2"},"37":{"name":"BB Cannon Cart","tid":"TID_MOVING_CANNON"},"42":{"name":"BB Night Witch","tid":"TID_DARK_WITCH"},"43":{"name":"BB Bat","tid":"TID_BAT"},"113":{"name":"BB Enraged Bat","tid":"TID_BAT"},"38":{"name":"BB Drop Ship","tid":"TID_BALLOON_CARRIER"},"40":{"name":"BB Drop Ship Skeleton","tid":"TID_SKELETON"},"36":{"name":"BB Power PEKKA","tid":"TID_SUPER_CHARGED_PEKKA"},"70":{"name":"BB Hog Glider","tid":"TID_HOG_GLIDER"},"71":{"name":"BB Hog Rider","tid":"TID_HOG_RIDER"},"114":{"name":"BB Electrofire Wizard","tid":"TID_ELECTROFIRE_WIZARD"},"115":{"name":"BB Zappy","tid":"TID_ZAPPY"},"44":{"name":"BB MovingCannonSecondary","tid":"TID_MOVING_CANNON"},"197":{"name":"Guardian Sniffer","tid":"TID_SNIFFER_GUARDIAN"},"198":{"name":"Guardian Builder","tid":"TID_BUILDER_GUARDIAN"},"199":{"name":"Guardian Logger","tid":"TID_LOGGER_GUARDIAN"},"200":{"name":"Guardian Returner","tid":"TID_RETURNER_GUARDIAN"},"202":{"name":"Elephant","tid":"TID_CHARACTER_ELEPHANT"},"203":{"name":"Rider","tid":"TID_CHARACTER_ELEPHANT_RIDER_DEPLOYED"},"204":{"name":"Air Troop Launcher","tid":"TID_SIEGE_MACHINE_AIR_TROOP_LAUNCHER"},"205":{"name":"UnusedSiegePrototype","tid":"TID_SIEGE_MACHINE_RAM"},"201":{"name":"Elephant Rider","tid":"TID_CHARACTER_ELEPHANT_RIDER"},"207":{"name":"Undead Wrestler Big Boy","tid":"TID_CHARACTER_UNDEAD_WRESTLER_BIG_BOY"},"208":{"name":"Ruin Witch_DEF","tid":"TID_CHARACTER_RUIN_WITCH"},"206":{"name":"UndeadWrestler","tid":"TID_CHARACTER_UNDEAD_WRESTLER"},"209":{"name":"Tiny Totem","tid":""},"210":{"name":"Totem Thrower","tid":"TID_CHARACTER_TOTEM_THROWER"},"211":{"name":"Barcher Squad","tid":"TID_BARCHER_SQUAD"},"212":{"name":"Giant Wizard Squad","tid":"TID_GIANT_WIZARD_SQUAD"},"213":{"name":"Wall Breaker Squad","tid":"TID_WALL_BREAKER_SQUAD"},"214":{"name":"Minion Squad","tid":"TID_MINION_SQUAD"},"215":{"name":"Balloon Squad","tid":"TID_BALLOON_SQUAD"},"216":{"name":"Golemwitch Squad","tid":"TID_GOLEMWITCH_SQUAD"},"217":{"name":"Hog Rider Squad","tid":"TID_HOG_RIDER_SQUAD"},"218":{"name":"Miner Squad","tid":"TID_MINER_SQUAD"},"219":{"name":"Healer Squad","tid":"TID_HEALER_SQUAD"},"220":{"name":"PEKKA Etitan Squad","tid":"TID_PEKKA_ETITAN_SQUAD"},"221":{"name":"Dragon Squad","tid":"TID_DRAGON_SQUAD"},"222":{"name":"Baby Dragon Squad","tid":"TID_BABY_DRAGON_SQUAD"},"223":{"name":"Seasonal Defense Spear Goblin","tid":"TID_CHARACTER_SPEAR_GOBLIN"},"224":{"name":"Christmas Yeti","tid":"TID_CHARACTER_CHRISTMAS_YETI"},"225":{"name":"ChristmasYetiMite","tid":"TID_CHARACTER_CHRISTMAS_YETI_MITE"},"226":{"name":"FireGoat","tid":"TID_CHARACTER_FIRE_GOAT"},"227":{"name":"FireGoatMini","tid":"TID_CHARACTER_FIRE_GOAT_MINI"},"228":{"name":"FireGoatAdult","tid":"TID_CHARACTER_FIRE_GOAT"},"81":{"name":"ShamanPet","tid":"TID_BARBARIAN"},"82":{"name":"PEKKA3","tid":"TID_SUPER_CHARGED_PEKKA"},"83":{"name":"Balloon3","tid":"TID_BALLOON_CARRIER"},"84":{"name":"Balloon Skeleton2","tid":"TID_SKELETON"},"85":{"name":"Dark Witch2","tid":"TID_DARK_WITCH"},"86":{"name":"Bat2","tid":"TID_BAT"},"87":{"name":"Hog Glider2","tid":"TID_HOG_GLIDER"},"88":{"name":"Hog Rider2","tid":"TID_HOG_RIDER"},"178":{"name":"PEKKA2 MB","tid":"TID_SUPER_CHARGED_PEKKA"},"179":{"name":"Balloon2 MB","tid":"TID_BALLOON_CARRIER"},"180":{"name":"Balloon Skeleton MB","tid":"TID_SKELETON"},"181":{"name":"Dark Witch MB","tid":"TID_DARK_WITCH"},"182":{"name":"Bat MB","tid":"TID_BAT"},"183":{"name":"Hog Glider MB","tid":"TID_HOG_GLIDER"},"184":{"name":"Hog Rider MB","tid":"TID_HOG_RIDER"},"185":{"name":"Bat Enraged MB","tid":"TID_BAT"}},"spells":{"0":{"name":"Lightning","tid":"TID_LIGHTNING_STORM"},"1":{"name":"Healing","tid":"TID_HEALING_WAVE"},"2":{"name":"Rage","tid":"TID_HASTE"},"3":{"name":"Jump","tid":"TID_JUMP_SPELL"},"5":{"name":"Freeze","tid":"TID_FREEZE_SPELL"},"16":{"name":"Clone","tid":"TID_DUPLICATE_SPELL"},"35":{"name":"Invisibility","tid":"TID_INVISIBILITY_SPELL"},"53":{"name":"Recall","tid":"TID_SPELL_RECALL"},"98":{"name":"Revive","tid":"TID_SPELL_REVIVE"},"123":{"name":"Totem Spell","tid":"TID_TOTEM_SPELL"},"9":{"name":"Poison","tid":"TID_POISON_CLOUD"},"10":{"name":"Earthquake","tid":"TID_EARTHQUAKE"},"11":{"name":"Haste","tid":"TID_SPEEDUP"},"17":{"name":"Skeleton Spell","tid":"TID_CREATE_SKELETONS_SPELL"},"28":{"name":"Bat Spell","tid":"TID_SPELL_BATS"},"70":{"name":"Overgrowth","tid":"TID_SPELL_OVERGROWTH"},"109":{"name":"Ice Block","tid":"TID_ICE_BLOCK_SPELL"},"4":{"name":"xmas","tid":"TID_XMAS_SPELL"},"6":{"name":"Santas Surprise","tid":"TID_XMAS_SPELL"},"7":{"name":"Slow","tid":"TID_SLOW_SPELL"},"8":{"name":"BoostDefences","tid":"TID_BOOSTDEFENCES_SPELL"},"12":{"name":"Eternal Tome Aura","tid":""},"13":{"name":"Life Gem Aura","tid":""},"14":{"name":"Eagle Artillery Hit Spell","tid":""},"15":{"name":"MiniGrowth","tid":""},"18":{"name":"FreezeTrap","tid":""},"19":{"name":"Lava Launcher Hit Spell","tid":""},"20":{"name":"TroopRage","tid":""},"21":{"name":"ShrinkTrap","tid":""},"22":{"name":"Birthday2017","tid":"TID_BIRTHDAY_SPELL"},"23":{"name":"IceGolemFreeze","tid":""},"24":{"name":"ElectroDragonDie","tid":""},"25":{"name":"Tornado Trap","tid":""},"26":{"name":"TroopHaste","tid":""},"27":{"name":"ProtoSpell2","tid":"TID_LIGHTNING_STORM"},"29":{"name":"IceGolemFreeze_DEF","tid":""},"30":{"name":"Scattershot Hit Spell","tid":""},"31":{"name":"BatRage","tid":""},"32":{"name":"TH13 Frost","tid":""},"33":{"name":"Electro Titan Aura","tid":""},"34":{"name":"EliteValkyrieRage","tid":""},"36":{"name":"IceHoundFreeze","tid":""},"37":{"name":"TH14 Poison","tid":""},"38":{"name":"FireSpiritExplosion","tid":""},"39":{"name":"PhoenixImmortality","tid":""},"40":{"name":"TroopImmortality","tid":""},"41":{"name":"AreaStun","tid":""},"42":{"name":"DrillerSurfacing","tid":""},"43":{"name":"TH15 Poison","tid":""},"44":{"name":"Spell Tower Poison","tid":"TID_POISON_CLOUD_TOWER"},"45":{"name":"SuperHogRiderSummonHog","tid":""},"46":{"name":"Spell Tower Rage","tid":"TID_HASTE_TOWER"},"47":{"name":"SuperHogRiderSummonRider","tid":""},"48":{"name":"Spell Tower Invisibility","tid":"TID_INVISIBILITY_SPELL_TOWER"},"49":{"name":"GraveGolemSummonBigBoy","tid":""},"50":{"name":"HogWizardDamageAura","tid":""},"51":{"name":"Unused1","tid":""},"52":{"name":"COOKIEAura","tid":""},"54":{"name":"GrandWardenRangeRing","tid":""},"55":{"name":"PoisonLizardAttack","tid":""},"56":{"name":"RamRiderDestroyWalls","tid":"TID_RAM_RIDER_ABILITY_TITLE"},"57":{"name":"SlowBomb","tid":""},"58":{"name":"VisualRage","tid":""},"59":{"name":"Baby Dragon Flaming Sneeze","tid":""},"60":{"name":"Power PEKKA Overcharge","tid":""},"61":{"name":"Drop Ship Skeleton Bomb","tid":""},"62":{"name":"Night Witch Bat Swarm","tid":""},"63":{"name":"Cannon Cart Mortar Mode Splash","tid":""},"64":{"name":"Apprentice Aura","tid":""},"65":{"name":"PetJump","tid":""},"66":{"name":"PetSpeedUp","tid":""},"67":{"name":"FireSpiritBurn","tid":""},"68":{"name":"TreantWallDamageAura","tid":""},"69":{"name":"SiegeInvisibility","tid":""},"71":{"name":"Heroic Torch Aura","tid":""},"72":{"name":"Blizzard","tid":"TID_FREEZE_SPELL"},"73":{"name":"BagOfFrostmites","tid":"TID_SPELL_BAG_OF_FROSTMITES"},"74":{"name":"TroopCatapultSummonTroop","tid":""},"75":{"name":"LavaloonSpawnPup","tid":""},"76":{"name":"Firecracker Hit Spell","tid":""},"77":{"name":"Earthquake Boots Spell","tid":"TID_EARTHQUAKE"},"78":{"name":"Fireball Hit Spell","tid":""},"79":{"name":"Rage Gem Aura","tid":""},"80":{"name":"QueenFreeze","tid":""},"81":{"name":"ElectrifiedShield","tid":""},"82":{"name":"BarbarianKingDestroyWalls","tid":"TID_RAM_RIDER_ABILITY_TITLE"},"83":{"name":"Healing Tome Aura","tid":""},"84":{"name":"Yellow Card","tid":"TID_SPELL_YELLOW_CARD"},"85":{"name":"GWPhoenixStickSpell","tid":""},"86":{"name":"BattleDruidHeal","tid":"TID_HEALING_WAVE"},"87":{"name":"Electro Boots Aura","tid":""},"88":{"name":"GWLavaloonSpawnPup","tid":""},"89":{"name":"IceMinionFreeze","tid":""},"90":{"name":"Commander Aura","tid":""},"91":{"name":"TroopCatapultSummonTroopNew","tid":""},"92":{"name":"TorchThrowerB","tid":""},"93":{"name":"Destroyer","tid":""},"94":{"name":"Debris Explosion 1","tid":"TID_LIGHTNING_STORM"},"95":{"name":"Debris Explosion 2","tid":"TID_EARTHQUAKE"},"96":{"name":"FireSpiritBurn_DEF","tid":""},"97":{"name":"Resurrect","tid":"TID_SPELL_REVIVE"},"99":{"name":"TH17WeaponAreaDamage","tid":""},"100":{"name":"BarbKingEquipSpawn","tid":""},"101":{"name":"MassDestruction","tid":"TID_SPELL_MASS_DESTRUCTION"},"102":{"name":"MinionGiantPoison","tid":"TID_POISON_CLOUD"},"103":{"name":"Unused2","tid":""},"104":{"name":"Unused3","tid":""},"105":{"name":"April25_TBRM_Aura","tid":""},"106":{"name":"April25_TBRM_DeathSpawn","tid":""},"107":{"name":"April25_RRAltProjectile_Spawn","tid":""},"108":{"name":"April25_RRAltProjectile_Spawn_DEF","tid":""},"110":{"name":"MPMeteorStaffSpell","tid":""},"111":{"name":"MeteorGolemImpactSpell","tid":""},"112":{"name":"TH18EventMeteorDeathDamage","tid":""},"116":{"name":"SmasherRageArea","tid":""},"117":{"name":"SlowdownTowerSlowness","tid":"TID_POISON_CLOUD_TOWER"},"118":{"name":"GuardianRage","tid":""},"119":{"name":"GuardianReviveSpell","tid":""},"120":{"name":"SeasonalDefenseHeroBoosterRageAura","tid":""},"121":{"name":"SeasonalDefenseHeroBoosterHealthBoostAura","tid":""},"122":{"name":"Debris Explosion 3","tid":"TID_LIGHTNING_STORM"},"124":{"name":"TotemSummon","tid":""},"125":{"name":"PhoenixSpell","tid":"TID_HEALING_WAVE"},"126":{"name":"AngrySpell","tid":"TID_ANGRY_SPELL_ANGER"},"127":{"name":"Unused4","tid":""},"128":{"name":"Unused5","tid":""},"129":{"name":"Clashmas25FireArea","tid":""},"130":{"name":"LNY26HealingArea","tid":""},"131":{"name":"LNY26DeathDamage","tid":""},"132":{"name":"Lava Launcher Hit Spell_Seasonal_Defense","tid":""},"133":{"name":"Spell Tower Earthquake","tid":"TID_EARTHQUAKE"},"134":{"name":"DragonDukeDashAura","tid":""},"135":{"name":"DragonDukeRingOfFire","tid":""},"136":{"name":"DragonDukeFireBlast","tid":""},"137":{"name":"DragonCrownExplosion","tid":""},"138":{"name":"DDBlastSpell","tid":""},"139":{"name":"DragonDukeFireBlastMini","tid":""},"140":{"name":"GuardianBuilderRageSpell","tid":""},"141":{"name":"ElephantRiderSummonElephant","tid":""},"142":{"name":"ElephantRiderSummonRider","tid":""},"144":{"name":"AirTroopSummon","tid":""},"145":{"name":"CakeThrowerExplosion","tid":""},"143":{"name":"UndeadWrestlerDeathSpawn","tid":""},"151":{"name":"Blizzard Axe Aura","tid":""},"146":{"name":"TinyTotemImpact","tid":""},"147":{"name":"TinyTotemSummon","tid":""},"148":{"name":"CakeThrowerExplosion2","tid":""},"149":{"name":"CakeThrowerExplosion3","tid":""},"150":{"name":"CakeThrowerExplosion4","tid":""},"152":{"name":"GoblinThrowerTowerSummon","tid":""},"153":{"name":"Firecracker Tower Hit Spell","tid":""},"154":{"name":"ShieldBroochBurst","tid":""},"155":{"name":"ChristmasYetiMiteFreeze","tid":""},"156":{"name":"Heroic Spell","tid":"TID_SPELL_HEROIC_SPELL"},"157":{"name":"FireGoatSummonLamb","tid":""},"113":{"name":"Power PEKKA Overcharge MB","tid":""},"114":{"name":"Drop Ship Skeleton Bomb MB","tid":""},"115":{"name":"Night Witch Bat Swarm MB","tid":""}},"heroes":{"0":{"name":"Barbarian King","tid":"TID_BARBARIAN_KING"},"1":{"name":"Archer Queen","tid":"TID_ARCHER_QUEEN"},"2":{"name":"Grand Warden","tid":"TID_GRAND_WARDEN"},"3":{"name":"BB Battle Machine","tid":"TID_WARMACHINE"},"4":{"name":"Royal Champion","tid":"TID_HERO_ROYAL_CHAMPION"},"5":{"name":"Custom_Shaman","tid":"TID_SHAMAN"},"6":{"name":"BB Battle Copter","tid":"TID_HERO_BATTLE_COPTER"},"7":{"name":"Minion Prince","tid":"TID_MINION_HERO"},"8":{"name":"Dragon Duke","tid":"TID_DRAGON_DUKE"}},"pets":{"0":{"name":"LASSI","tid":"TID_PET_MELEEJUMPER"},"1":{"name":"Mighty Yak","tid":"TID_PET_WALLBUSTER"},"2":{"name":"Electro Owl","tid":"TID_PET_RANGEDATTACKER"},"3":{"name":"Unicorn","tid":"TID_PET_HEALER"},"4":{"name":"Phoenix","tid":"TID_PET_PHOENIX"},"5":{"name":"Phoenix Egg","tid":"TID_PET_PHOENIX"},"6":{"name":"Stork","tid":"TID_PET_HEALER"},"7":{"name":"Poison Lizard","tid":"TID_PET_POISON_LIZARD"},"8":{"name":"Diggy","tid":"TID_PET_DIGGY"},"9":{"name":"Frosty","tid":"TID_PET_FROSTY"},"10":{"name":"Spirit Fox","tid":"TID_PET_SPIRIT_FOX"},"11":{"name":"Angry Jelly","tid":"TID_PET_ANGRY_JELLY"},"12":{"name":"JumpAuraPet","tid":"TID_PET_MELEEJUMPER"},"13":{"name":"SpeedupPet","tid":"TID_PET_RANGEDATTACKER"},"14":{"name":"Turtle","tid":"TID_PET_MELEEJUMPER"},"15":{"name":"AirSplitPetSpawnRemoved","tid":"TID_PET_RANGEDATTACKER"},"16":{"name":"Sneezy","tid":"TID_PET_SNEEZY"},"17":{"name":"Crow","tid":"TID_PET_RAVEN"}},"equipment":{"0":{"name":"Barbarian Puppet","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"1":{"name":"Rage Vial","tid":"TID_GEAR_TITLE_IRON_FIST"},"2":{"name":"Archer Puppet","tid":"TID_GEAR_TITLE_ARCHER_CROWN"},"3":{"name":"Invisibility Vial","tid":"TID_GEAR_TITLE_ROYAL_CLOAK"},"4":{"name":"Eternal Tome","tid":"TID_GEAR_TITLE_ETERNAL_TOME"},"5":{"name":"Life Gem","tid":"TID_GEAR_TITLE_LIFE_GEM"},"6":{"name":"Seeking Shield","tid":"TID_GEAR_TITLE_SEEKING_SHIELD"},"7":{"name":"Royal Gem","tid":"TID_GEAR_PROTECTIVE_CLOAK"},"8":{"name":"Earthquake Boots","tid":"TID_GEAR_EARTHQUAKE_BOOTS"},"9":{"name":"Hog Rider Puppet","tid":"TID_GEAR_HOG_TOTEM"},"10":{"name":"Giant Gauntlet","tid":"TID_GEAR_GIANT_GAUNTLET"},"11":{"name":"Vampstache","tid":"TID_GEAR_VAMPSTACHE"},"12":{"name":"Haste Vial","tid":"TID_GEAR_TITLE_HASTE_VIAL"},"13":{"name":"Rocket Spear","tid":"TID_GEAR_ROCKET_SPEAR"},"14":{"name":"Spiky Ball","tid":"TID_GEAR_TITLE_FOOTBALL"},"15":{"name":"Frozen Arrow","tid":"TID_GEAR_FROZEN_ARROW"},"16":{"name":"Monolith Arrow","tid":"TID_GEAR_MONOLITH_ARROW"},"17":{"name":"Giant Arrow","tid":"TID_GEAR_GIANT_ARROW"},"18":{"name":"UNUSED2","tid":"TID_GEAR_GIANT_ARROW"},"19":{"name":"Heroic Torch","tid":"TID_GEAR_TITLE_HEROIC_TORCH"},"20":{"name":"Healer Puppet","tid":"TID_GEAR_HEALER_JAR"},"21":{"name":"UNUSED3","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"22":{"name":"Fireball","tid":"TID_GEAR_FIRE_IN_A_CAN"},"23":{"name":"UNUSED4","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"24":{"name":"Rage Gem","tid":"TID_GEAR_ANGRY_TOME"},"25":{"name":"UNUSED5","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"26":{"name":"UNUSED6","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"27":{"name":"UNUSED7","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"28":{"name":"UNUSED8","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"29":{"name":"UNUSED9","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"30":{"name":"UNUSED10","tid":"TID_GEAR_HOG_TOTEM"},"31":{"name":"UNUSED11","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"32":{"name":"Snake Bracelet","tid":"TID_GEAR_TITLE_SNAKE_ARMOR"},"33":{"name":"UNUSED13","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"34":{"name":"Healing Tome","tid":"TID_GEAR_HEALING_TOME"},"35":{"name":"Dark Crown","tid":"TID_GEAR_DARK_CROWN"},"36":{"name":"Shaman1","tid":"TID_GEAR_ROCKET_SPEAR"},"37":{"name":"Shaman2","tid":"TID_GEAR_TITLE_IRON_FIST"},"38":{"name":"UNUSED15","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"39":{"name":"UNUSED16","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"40":{"name":"UNUSED17","tid":"TID_GEAR_TITLE_BARBARIAN_CROWN"},"41":{"name":"Magic Mirror","tid":"TID_GEAR_TITLE_CLONING_CLOAK"},"42":{"name":"Electro Boots","tid":"TID_GEAR_ELECTRO_SHIELD"},"43":{"name":"Lavaloon Puppet","tid":"TID_GEAR_LAVALOON_PUPPET"},"44":{"name":"Henchmen Puppet","tid":"TID_GEAR_TITLE_MINION_BODYGUARDS"},"45":{"name":"Dark Orb","tid":"TID_GEAR_TITLE_DARK_ORB"},"46":{"name":"Metal Pants","tid":"TID_GEAR_TITLE_STONE_AMULET"},"47":{"name":"MP Trap Shield","tid":"TID_GEAR_TITLE_TRAP_SHIELD"},"48":{"name":"Punch Arrow","tid":"TID_GEAR_TITLE_CLONING_CLOAK"},"49":{"name":"Noble Iron","tid":"TID_GEAR_TITLE_TURBO_START"},"50":{"name":"Action Figure","tid":"TID_GEAR_ACTION_FIGURE"},"51":{"name":"Meteor Staff","tid":"TID_GEAR_METEOR_WAND"},"52":{"name":"Frost Charm","tid":"TID_GEAR_FROST_CHARM"},"53":{"name":"Stick Horse","tid":"TID_GEAR_TITLE_STICK_HORSE"},"54":{"name":"Fire Heart","tid":"TID_GEAR_TITLE_FIRE_HEART"},"55":{"name":"Rocket Backpack","tid":"TID_GEAR_TITLE_DEADLY_DASH"},"56":{"name":"Deadly Dash2","tid":"TID_GEAR_TITLE_DEADLY_DASH"},"57":{"name":"Deadly Dash3","tid":"TID_GEAR_TITLE_DEADLY_DASH"},"58":{"name":"Stun Blaster","tid":"TID_GEAR_TITLE_STUN_BLAST"},"59":{"name":"Flame Blower","tid":"TID_GEAR_TITLE_FLAME_BREATH"},"60":{"name":"FlameAttack","tid":"TID_GEAR_TITLE_STUN_BLAST"},"61":{"name":"ElectroAttack","tid":"TID_GEAR_TITLE_ELECTRO_ATTACK"},"62":{"name":"Draconic Counter","tid":"TID_GEAR_DRAGON_REFLECTOR"},"63":{"name":"Cosmic Portal","tid":"TID_GEAR_TITLE_COSMIC_PORTAL"},"64":{"name":"Shield Brooch","tid":"TID_GEAR_TITLE_SHIELD_BROOCH"},"65":{"name":"Blizzard Axe","tid":"TID_GEAR_TITLE_BLIZZARD_AXE"},"66":{"name":"\u0000","tid":""}}}};
+    let lastArmyAnalysis = null;
 
     function setServer(server) {
       targetServer = server;
@@ -230,7 +383,7 @@
         if (!army) return { error: 'CopyArmy link has no army parameter.' };
         // Army codes only use [A-Za-z0-9_-]. Strip anything else defensively.
         const cleanArmy = army.replace(/[^A-Za-z0-9_\-]/g, '');
-        return { action: 'CopyArmy', army: cleanArmy, type: 'army' };
+        return { action: 'CopyArmy', army: cleanArmy, type: 'army', sourceGame: detectSourceGame(cleaned) };
       }
 
       if (action === 'OpenLayout') {
@@ -247,48 +400,510 @@
       return { action, type: 'unknown', params };
     }
 
+
+    // ARMY REMAP DIAGNOSTICS V1
+
+    function detectSourceGame(value) {
+      if (/link\.clashofclans\.com|clashofclans:\/\//i.test(value))
+        return 'coc';
+
+      if (/link\.ultimate\.atrasis\.cc|atrasis-ultimate:/i.test(value))
+        return 'ultimate';
+
+      if (/link\.original\.atrasis\.cc|atrasis-original:/i.test(value))
+        return 'atrasisOriginal';
+
+      return 'unknown';
+    }
+
+    function escapeArmyHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[ch]);
+    }
+
+    function getArmyObject(gameDb, category, id) {
+      return gameDb?.[category]?.[String(id)] || null;
+    }
+
+
+    function mapArmyObject(category, id, sourceDb, targetDb, canRemap) {
+      const source = getArmyObject(sourceDb, category, id);
+
+      // Never access properties of a missing source record.
+      if (!source || typeof source !== 'object') {
+        return {
+          sourceId: id,
+          sourceName: 'UNKNOWN SOURCE ID',
+          sourceTid: '',
+          targetId: id,
+          targetName: '',
+          status: 'UNKNOWN SOURCE ID'
+        };
+      }
+
+      if (!targetDb ||
+          !targetDb[category] ||
+          typeof targetDb[category] !== 'object') {
+        return {
+          sourceId: id,
+          sourceName: source.name || 'Unnamed object',
+          sourceTid: source.tid || '',
+          targetId: id,
+          targetName: '',
+          status: 'TARGET DATABASE UNAVAILABLE'
+        };
+      }
+
+      // Discard malformed database entries before matching.
+      const candidates = Object.entries(targetDb[category]).filter(
+        ([targetId, item]) =>
+          /^\d+$/.test(targetId) &&
+          item !== null &&
+          typeof item === 'object' &&
+          typeof item.name === 'string' &&
+          item.name.length > 0
+      );
+
+      if (!canRemap) {
+        const sameId = getArmyObject(targetDb, category, id);
+
+        return {
+          sourceId: id,
+          sourceName: source.name || 'Unnamed object',
+          sourceTid: source.tid || '',
+          targetId: id,
+          targetName: sameId && sameId.name
+            ? sameId.name
+            : '',
+          status: sameId
+            ? 'UNCHANGED — NOT REMAPPED'
+            : 'UNVERIFIED TARGET ID'
+        };
+      }
+
+      // Match exact name and TID first.
+      let matches = candidates.filter(([, item]) =>
+        item.name === source.name &&
+        !!source.tid &&
+        item.tid === source.tid
+      );
+
+      if (matches.length === 1) {
+        const [targetId, item] = matches[0];
+
+        return {
+          sourceId: id,
+          sourceName: source.name,
+          sourceTid: source.tid || '',
+          targetId: Number(targetId),
+          targetName: item.name,
+          status: Number(targetId) === Number(id)
+            ? 'MATCHED — SAME ID'
+            : 'REMAPPED'
+        };
+      }
+
+      // Fall back to a unique TID.
+      if (source.tid) {
+        matches = candidates.filter(([, item]) =>
+          item.tid === source.tid
+        );
+
+        if (matches.length === 1) {
+          const [targetId, item] = matches[0];
+
+          return {
+            sourceId: id,
+            sourceName: source.name,
+            sourceTid: source.tid,
+            targetId: Number(targetId),
+            targetName: item.name,
+            status: Number(targetId) === Number(id)
+              ? 'MATCHED — SAME ID'
+              : 'REMAPPED BY TID'
+          };
+        }
+      }
+
+      // Last fallback: unique exact name.
+      matches = candidates.filter(([, item]) =>
+        item.name === source.name
+      );
+
+      if (matches.length === 1) {
+        const [targetId, item] = matches[0];
+
+        return {
+          sourceId: id,
+          sourceName: source.name,
+          sourceTid: source.tid || '',
+          targetId: Number(targetId),
+          targetName: item.name,
+          status: Number(targetId) === Number(id)
+            ? 'MATCHED — SAME ID'
+            : 'REMAPPED BY NAME'
+        };
+      }
+
+      return {
+        sourceId: id,
+        sourceName: source.name || 'Unnamed object',
+        sourceTid: source.tid || '',
+        targetId: id,
+        targetName: '',
+        status: matches.length > 1
+          ? 'AMBIGUOUS TARGET'
+          : 'NO TARGET MATCH'
+      };
+    }
+
+    function splitArmySections(army) {
+      const matches = Array.from(army.matchAll(/[hidus]/g));
+      const sections = [];
+
+      for (let i = 0; i < matches.length; i++) {
+        const marker = matches[i][0];
+        const start = matches[i].index + 1;
+        const end = i + 1 < matches.length
+          ? matches[i + 1].index
+          : army.length;
+
+        sections.push({
+          marker,
+          value: army.substring(start, end)
+        });
+      }
+
+      return sections;
+    }
+
+    function analyzeArmy(army, sourceGame, targetServer) {
+      const targetGame = targetServer === 'ultimate'
+        ? 'ultimate'
+        : 'atrasisOriginal';
+
+      const sourceDb = ARMY_DATABASES[sourceGame] || null;
+      const targetDb = ARMY_DATABASES[targetGame] || null;
+
+      const canRemap = !!(
+        sourceDb &&
+        targetDb &&
+        sourceGame !== targetGame
+      );
+
+      const warnings = [];
+      const rows = [];
+
+      if (!sourceDb) {
+        warnings.push(
+          'No verified database is loaded for this source game. IDs are preserved.'
+        );
+      }
+
+      if (!targetDb) {
+        warnings.push(
+          'Atrasis Original database has not been extracted. IDs are preserved; compatibility is unverified.'
+        );
+      }
+
+      if (sourceDb && targetDb && sourceGame === targetGame) {
+        warnings.push(
+          'Source and target are the same database. No ID remapping is necessary.'
+        );
+      }
+
+      if (sourceDb && targetDb && !canRemap && sourceGame !== targetGame) {
+        warnings.push('Remapping is disabled for this source/target combination.');
+      }
+
+      function resolve(category, id, section, quantity, displayCategory) {
+        const result = mapArmyObject(
+          category,
+          id,
+          sourceDb,
+          targetDb,
+          canRemap
+        );
+
+        rows.push({
+          ...result,
+          category: displayCategory,
+          section,
+          quantity
+        });
+
+        return result.targetId;
+      }
+
+      function processHeroSegment(segment) {
+        const match = segment.match(
+          /^(\d+)(?:m(\d+))?(?:p(\d+))?(?:e(\d+(?:_\d+)*))?$/
+        );
+
+        if (!match) {
+          warnings.push('Could not parse hero segment: ' + segment);
+          return segment;
+        }
+
+        const heroId = Number(match[1]);
+        const mode = match[2];
+        const petId = match[3];
+        const equipmentIds = match[4];
+
+        let output = String(
+          resolve('heroes', heroId, 'Heroes', null, 'Hero')
+        );
+
+        if (mode !== undefined) {
+          output += 'm' + mode;
+        }
+
+        if (petId !== undefined) {
+          output += 'p' + resolve(
+            'pets',
+            Number(petId),
+            'Pets',
+            null,
+            'Pet'
+          );
+        }
+
+        if (equipmentIds !== undefined) {
+          const mappedEquipment = equipmentIds.split('_').map(rawId =>
+            resolve(
+              'equipment',
+              Number(rawId),
+              'Hero equipment',
+              null,
+              'Equipment'
+            )
+          );
+
+          output += 'e' + mappedEquipment.join('_');
+        }
+
+        return output;
+      }
+
+      function processItemSection(marker, value) {
+        const category = marker === 'i' || marker === 'u'
+          ? 'troops'
+          : 'spells';
+
+        const title = marker === 'i'
+          ? 'Clan Castle troops'
+          : marker === 'd'
+            ? 'Clan Castle spells'
+            : marker === 'u'
+              ? 'Main army troops'
+              : 'Main army spells';
+
+        return value.split('-').map(part => {
+          if (!part) return part;
+
+          const match = part.match(/^(\d+)x(\d+)$/);
+
+          if (!match) {
+            warnings.push('Could not parse item: ' + part);
+            return part;
+          }
+
+          const quantity = Number(match[1]);
+          const id = Number(match[2]);
+
+          const mappedId = resolve(
+            category,
+            id,
+            title,
+            quantity,
+            category === 'troops' ? 'Troop' : 'Spell'
+          );
+
+          return quantity + 'x' + mappedId;
+        }).join('-');
+      }
+
+      const sections = splitArmySections(army);
+
+      if (!sections.length) {
+        warnings.push('No recognizable army sections found.');
+      }
+
+      const outputArmy = sections.map(section => {
+        let value = section.value;
+
+        if (section.marker === 'h') {
+          value = value.split('-').map(processHeroSegment).join('-');
+        } else {
+          value = processItemSection(section.marker, value);
+        }
+
+        return section.marker + value;
+      }).join('');
+
+      const unresolved = rows.filter(row =>
+        row.status.startsWith('UNKNOWN') ||
+        row.status.startsWith('NO TARGET') ||
+        row.status.startsWith('AMBIGUOUS') ||
+        row.status.startsWith('TARGET DATABASE')
+      );
+
+      if (unresolved.length) {
+        warnings.push(
+          unresolved.length +
+          ' army object(s) could not be confidently mapped. Their original IDs were preserved.'
+        );
+      }
+
+      return {
+        sourceGame,
+        targetGame,
+        sourceVersion: sourceDb?.version || 'unknown',
+        targetVersion: targetDb?.version || 'not loaded',
+        originalArmy: army,
+        outputArmy,
+        rows,
+        warnings,
+        remappedCount: rows.filter(row =>
+          row.status.startsWith('REMAPPED')
+        ).length
+      };
+    }
+
     function buildOutputUrl(parsed, server) {
       const base = `https://link.${server}.atrasis.cc/en`;
+
+      lastArmyAnalysis = null;
+
       if (parsed.type === 'army') {
-        return `${base}?action=CopyArmy&army=${parsed.army}`;
+        lastArmyAnalysis = analyzeArmy(
+          parsed.army,
+          parsed.sourceGame || 'unknown',
+          server
+        );
+
+        return `${base}?action=CopyArmy&army=${encodeURIComponent(
+          lastArmyAnalysis.outputArmy
+        )}`;
       }
+
       if (parsed.type === 'layout') {
         const p = new URLSearchParams();
         p.set('action', 'OpenLayout');
         p.set('id', parsed.id);
-        for (const k in parsed.extras) p.set(k, parsed.extras[k]);
+
+        for (const k in parsed.extras) {
+          p.set(k, parsed.extras[k]);
+        }
+
         return `${base}?${p.toString()}`;
       }
+
       return null;
     }
 
-    function extractArmyIds(army) {
-      const matches = army.match(/x(\d+)/g) || [];
-      const ids = [...new Set(matches.map(m => parseInt(m.slice(1), 10)))];
-      ids.sort((a, b) => a - b);
-      return ids;
-    }
-
     function renderArmyDebug(army) {
-      const ids = extractArmyIds(army);
-      const unknown = ids.filter(id => !KNOWN_ATRASIS_IDS.has(id));
       const dbg = document.getElementById('armyDebug');
-      const chips = ids.map(id => {
-        const cls = KNOWN_ATRASIS_IDS.has(id) ? 'id-chip' : 'id-chip warn';
-        return `<span class="${cls}">${id}</span>`;
-      }).join('');
-      let hint = '';
-      if (unknown.length) {
-        hint = `<div class="hint">Heads up: Atrasis's game version likely doesn't recognize troop/spell IDs <b>${unknown.join(', ')}</b>. That's almost certainly why it says "invalid army". The converter sent the right URL &mdash; the army code itself is incompatible with Atrasis's version. Try rebuilding the army inside Atrasis, or switch to Atrasis Ultimate (newer version).</div>`;
+      const analysis = lastArmyAnalysis;
+
+      if (!analysis) {
+        dbg.classList.add('hidden');
+        return;
       }
-      dbg.innerHTML =
-        `<h4>Extracted army code</h4>` +
-        `<code>${army}</code>` +
-        `<div style="margin-bottom:6px;">Troop / spell IDs in this army:</div>` +
-        `<div class="id-list">${chips}</div>` +
-        hint;
+
+      const gameNames = {
+        coc: 'Original Clash of Clans',
+        ultimate: 'Atrasis Ultimate',
+        atrasisOriginal: 'Atrasis Original',
+        unknown: 'Unknown source'
+      };
+
+      const rowsHtml = analysis.rows.map(row => {
+        const good = /^(MATCHED|REMAPPED|UNCHANGED)/.test(row.status);
+        const cls = good ? 'army-status-good' : 'army-status-warn';
+
+        const quantity = row.quantity === null
+          ? '—'
+          : `×${row.quantity}`;
+
+        const source = `${escapeArmyHtml(row.sourceName)} (#${row.sourceId})`;
+
+        const destinationName = row.targetName
+          ? escapeArmyHtml(row.targetName)
+          : 'Unresolved';
+
+        const destination = `${destinationName} (#${row.targetId})`;
+
+        return `
+          <tr>
+            <td>${escapeArmyHtml(row.section)}</td>
+            <td>${quantity}</td>
+            <td>${source}</td>
+            <td>${destination}</td>
+            <td class="${cls}">${escapeArmyHtml(row.status)}</td>
+          </tr>`;
+      }).join('');
+
+      const warningHtml = analysis.warnings.length
+        ? `<div class="army-warnings"><b>Warnings</b><ul>${
+            analysis.warnings.map(w =>
+              `<li>${escapeArmyHtml(w)}</li>`
+            ).join('')
+          }</ul></div>`
+        : `<div class="army-success">All parsed objects were mapped or recognized.</div>`;
+
+      dbg.innerHTML = `
+        <div class="army-report">
+          <h4>Army interpretation &amp; ID remapping</h4>
+
+          <div class="army-meta">
+            <div><b>Source:</b> ${escapeArmyHtml(gameNames[analysis.sourceGame] || analysis.sourceGame)}</div>
+            <div><b>Source asset version:</b> ${escapeArmyHtml(analysis.sourceVersion)}</div>
+            <div><b>Destination:</b> ${escapeArmyHtml(gameNames[analysis.targetGame] || analysis.targetGame)}</div>
+            <div><b>Destination asset version:</b> ${escapeArmyHtml(analysis.targetVersion)}</div>
+            <div><b>IDs remapped:</b> ${analysis.remappedCount}</div>
+            <div><b>Objects parsed:</b> ${analysis.rows.length}</div>
+          </div>
+
+          ${warningHtml}
+
+          <div class="army-table-wrap">
+            <table class="army-table">
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>Qty</th>
+                  <th>Source object / ID</th>
+                  <th>Destination object / ID</th>
+                  <th>Mapping</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml || '<tr><td colspan="5">No army objects parsed.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+
+          <details>
+            <summary>Original army code</summary>
+            <code>${escapeArmyHtml(analysis.originalArmy)}</code>
+          </details>
+
+          <details>
+            <summary>Generated army code</summary>
+            <code>${escapeArmyHtml(analysis.outputArmy)}</code>
+          </details>
+        </div>
+      `;
+
       dbg.classList.remove('hidden');
     }
+
 
     function convert() {
       const raw = document.getElementById('inputUrl').value;
